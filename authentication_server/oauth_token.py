@@ -8,7 +8,8 @@ def get_token():
     url = "http://localhost:8080/token.php"
 
 
-    bashCommand = f"curl -u {user}:{password} {url} -d 'grant_type=client_credentials'"
+    # bashCommand = f"curl -u {user}:{password} {url} -d 'grant_type=client_credentials'"
+    bashCommand = "curl -u testclient:testpass http://192.168.207.34:8080/token.php -d 'grant_type=client_credentials'"
     result = subprocess.run(bashCommand.split(), stdout=subprocess.PIPE, text=True)
     print(result)
    
