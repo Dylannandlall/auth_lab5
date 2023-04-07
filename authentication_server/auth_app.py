@@ -11,7 +11,8 @@ from flask_cors import CORS
 app = Flask(__name__)
 CORS(app)
 
-OAUTH_SERVER = "http://192.168.207.34:5000"
+#OAUTH_SERVER = "http://192.168.207.34:5001"
+OAUTH_SERVER = "http://127.0.0.1:5001"
 SECRET_KEY = "abcdefg"
 
 @app.route("/login", methods=['POST'])
@@ -26,23 +27,27 @@ def login():
             'username': username, 
             'password': password
         }
+    
     json_data = json.dumps(data)
 
     headers = {'Content-type': 'application/json', 'Accept': 'text/plain'}
 
-    # response = requests.post(f"{OAUTH_SERVER}/login", data=json_data, headers=headers)
+    response = requests.post(f"{OAUTH_SERVER}/oauthVerification", data=json_data, headers=headers).json()
 
-    # if response["status"] == "invalid":
-    #     return jsonify(auth="fail")
+    if response["auth"] == "success":
+        encrypted_token = encrypt(response["token"], string_kdf(SECRET_KEY))
+        json_response = {"auth":"success", "token":encrypted_token}
+        json_string = json.dumps(json_response)
+        return jsonify(message=(encrypt(json_string, string_kdf(password))))
+    
+    else:
+        return response
 
-    # if response["status"] == "valid":
-    #     encrypted_token = encrypt(response["oauth_token"], SECRET_KEY)
-    # json_response = jsonify(auth="success", token=encrypted_token)
+    # encrypted_token = (encrypt("This is a token!", string_kdf(SECRET_KEY)))
 
-    encrypted_token = (encrypt("This is a token!", string_kdf(SECRET_KEY)))
-    json_response = {"auth":"success", "token":encrypted_token}
-    json_string = json.dumps(json_response)
-    return jsonify(message=(encrypt(json_string, string_kdf(password))))
+    # json_response = {"auth":"success", "token":encrypted_token}
+    # json_string = json.dumps(json_response)
+    # return jsonify(message=(encrypt(json_string, string_kdf(password))))
 
 def encrypt(message, key):
     fernet = Fernet(key)

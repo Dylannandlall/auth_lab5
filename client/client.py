@@ -17,7 +17,7 @@ from cryptography.fernet import Fernet
 
 # AUTH_SERVER = "192.168.207.33:5000"
 AUTH_SERVER = "127.0.0.1:5000"
-APP_SERVER = "192.168.207.35:5000"
+APP_SERVER = "127.0.0.1:5002"
 
 def handler():
     print("This is a demonstration of our OAUTH implementation!\n")
@@ -38,9 +38,9 @@ def handler():
         # print(response["message"])
 
         encrypted_message = response["message"]
-        decrypted_response = (decrypt(encrypted_message, password_kdf(password))).decode()
+        decrypted_response = (decrypt(encrypted_message, string_kdf(password))).decode()
         decrypted_response = json.loads(decrypted_response)
-        # print(decrypted_response)
+        print(decrypted_response)
 
     
         # decrypted_response = json.loads(decrypted_response)
@@ -55,9 +55,18 @@ def handler():
 
         elif decrypted_response["auth"] == "success":
             print("SUCCESS")
-            # encrypted_token = response["token"]
-            # decrypted_token = decrypt(encrypted_token, hash(password))
-            # response = requests.post(f"http://{APP_SERVER}/token")
+            data = {
+                "auth" : decrypted_response["auth"],
+                "token" : decrypted_response["token"]
+            }
+
+            json_data = json.dumps(data)
+            response = requests.post(f"http://{APP_SERVER}/tokenPage", data=json_data, headers=headers).json()
+
+            if response["status"] == "success":
+                print(response["description"])
+                return
+            
 
         else:
             print("ERROR!")
@@ -68,7 +77,7 @@ def login():
     password = input("Please input your password: ")
     return username, password
 
-def password_kdf(password):
+def string_kdf(password):
     salt = b'1111'
     kdf = PBKDF2HMAC(
         algorithm=hashes.SHA256(),
