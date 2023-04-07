@@ -11,8 +11,8 @@ from flask_cors import CORS
 app = Flask(__name__)
 CORS(app)
 
-#OAUTH_SERVER = "http://192.168.207.34:5001"
-OAUTH_SERVER = "http://127.0.0.1:5001"
+OAUTH_SERVER = "http://192.168.207.34:5000"
+# OAUTH_SERVER = "http://127.0.0.1:5001"
 SECRET_KEY = "abcdefg"
 
 @app.route("/login", methods=['POST'])
