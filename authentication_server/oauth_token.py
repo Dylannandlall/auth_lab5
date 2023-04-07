@@ -7,6 +7,7 @@ def get_token():
     json_data = {
         'grant_type': 'client_credentials'
     }
+    json_data = json.dumps(json_data)
     requests_data = requests.post("http://192.168.207.34:5001", data=json_data, auth=("testclient", "testpass"), headers=headers).json()
     print(requests_data)
 
