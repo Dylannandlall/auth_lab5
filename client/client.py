@@ -15,7 +15,8 @@ from cryptography.fernet import Fernet
 
 AUTH_SERVER = "192.168.207.33:5000"
 # AUTH_SERVER = "127.0.0.1:5000"
-APP_SERVER = "192.168.207.35:5000"
+APP_SERVER = "192.168.207.35:5002"
+# APP_SERVER = "127.0.0.1:5002"
 
 def handler():
     print("This is a demonstration of our OAUTH implementation!\n")
