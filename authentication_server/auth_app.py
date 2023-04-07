@@ -73,7 +73,7 @@ def get_token(username, password):
     output, error = process.communicate()
     response = output.decode()
     response_json = json.loads(output)
-    return(response_json["access_token"])
+    return(response_json)
 
 
 if __name__ == "__main__":
