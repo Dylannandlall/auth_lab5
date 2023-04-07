@@ -9,9 +9,8 @@ def get_token():
 
 
     bashCommand = f"curl -u {user}:{password} {url} -d 'grant_type=client_credentials'"
-    process = subprocess.run(bashCommand.split(), stdout=subprocess.PIPE)
-    output, error = process.communicate()
-    print(output)
+    result = subprocess.run(bashCommand.split(), stdout=subprocess.PIPE, text=True)
+    print(result)
    
 
 if __name__ == "__main__":
