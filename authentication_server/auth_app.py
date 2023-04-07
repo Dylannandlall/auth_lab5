@@ -41,7 +41,7 @@ def login():
             json_response = {"auth":"success", "token":encrypted_token}
             json_string = json.dumps(json_response)
             return jsonify(message=(encrypt(json_string, string_kdf(password))))
-    except requests.exceptions.JSONDecodeError:
+    except (requests.exceptions.JSONDecodeError, KeyError):
         json_response = {"auth":"fail", "token":""}
         json_string = json.dumps(json_response)
         return jsonify(message=(encrypt(json_string, string_kdf(password))))
