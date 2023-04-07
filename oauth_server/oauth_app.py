@@ -24,4 +24,4 @@ def validate_credentials(username, password):
     return True
 
 if __name__ == "__main__":
-    app.run("localhost", port=5001, debug=True)
+    app.run("192.168.207.34", port=5001, debug=True)

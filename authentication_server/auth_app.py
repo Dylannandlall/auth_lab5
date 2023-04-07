@@ -10,7 +10,7 @@ from flask_cors import CORS
 app = Flask(__name__)
 CORS(app)
 
-OAUTH_SERVER = "http://192.168.207.34:5000"
+OAUTH_SERVER = "http://192.168.207.34:5001"
 # OAUTH_SERVER = "http://127.0.0.1:5001"
 SECRET_KEY = "abcdefg"
 
@@ -65,4 +65,4 @@ def string_kdf(password):
 
 
 if __name__ == "__main__":
-    app.run("localhost", port=5000, debug=True)
+    app.run("192.168.207.33", port=5000, debug=True)

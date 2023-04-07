@@ -47,4 +47,4 @@ def decrypt(encrypted_message, key):
 
 
 if __name__ == "__main__":
-    app.run("localhost", port=5002, debug=True)
+    app.run("192.168.207.35", port=5002, debug=True)
