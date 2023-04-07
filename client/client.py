@@ -14,9 +14,7 @@ from cryptography.fernet import Fernet
 
 
 AUTH_SERVER = "192.168.207.33:5000"
-# AUTH_SERVER = "127.0.0.1:5000"
 APP_SERVER = "192.168.207.35:5002"
-# APP_SERVER = "127.0.0.1:5002"
 
 def handler():
     print("This is a demonstration of our OAUTH implementation!\n")
@@ -34,18 +32,10 @@ def handler():
 
 
         response = (requests.post(f"http://{AUTH_SERVER}/login", data=json_data, headers=headers)).json()
-        # print(response["message"])
 
         encrypted_message = response["message"]
         decrypted_response = (decrypt(encrypted_message, string_kdf(password))).decode()
         decrypted_response = json.loads(decrypted_response)
-        print(decrypted_response)
-
-    
-        # decrypted_response = json.loads(decrypted_response)
-        # encrypted_message2 = decrypted_response["token"]
-        # decrypted_response2 = (decrypt(encrypted_message2, password_kdf("abcdefg"))).decode()
-        # print(decrypted_response2)
 
 
         if decrypted_response["auth"] == "fail":
@@ -53,7 +43,6 @@ def handler():
             continue
 
         elif decrypted_response["auth"] == "success":
-            print("SUCCESS")
             data = {
                 "auth" : decrypted_response["auth"],
                 "token" : decrypted_response["token"]

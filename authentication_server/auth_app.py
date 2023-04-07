@@ -27,12 +27,6 @@ def login():
             'password': password
         }
     
-    # json_data = json.dumps(data)
-
-    # headers = {'Content-type': 'application/json', 'Accept': 'text/plain'}
-
-    # response = requests.post(f"{OAUTH_SERVER}/oauthVerification", data=json_data, headers=headers).json()
-
     response = get_token(username, password)
 
     try:
@@ -50,12 +44,7 @@ def login():
         json_string = json.dumps(json_response)
         return jsonify(message=(encrypt(json_string, string_kdf(password))))
 
-    # encrypted_token = (encrypt("This is a token!", string_kdf(SECRET_KEY)))
-
-    # json_response = {"auth":"success", "token":encrypted_token}
-    # json_string = json.dumps(json_response)
-    # return jsonify(message=(encrypt(json_string, string_kdf(password))))
-
+ 
 def encrypt(message, key):
     fernet = Fernet(key)
     encrypted_message = fernet.encrypt(message.encode())
