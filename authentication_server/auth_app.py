@@ -1,6 +1,7 @@
 import requests
 import json
 import base64
+import subprocess
 from cryptography.hazmat.primitives import hashes
 from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC
 from cryptography.fernet import Fernet
@@ -11,7 +12,6 @@ app = Flask(__name__)
 CORS(app)
 
 OAUTH_SERVER = "http://192.168.207.34:5001"
-# OAUTH_SERVER = "http://127.0.0.1:5001"
 SECRET_KEY = "abcdefg"
 
 @app.route("/login", methods=['POST'])
@@ -62,6 +62,14 @@ def string_kdf(password):
         iterations=480000)
     
     return base64.urlsafe_b64encode(kdf.derive(bytes(password, 'utf-8')))
+
+def get_token(username, password):
+    url = "http://192.168.207.34:8080/token.php"
+    type = "grant_type=client_credentials"
+    bashCommand = f"curl -u {username}:{password} {url} -d {type}"
+    process = subprocess.Popen(bashCommand.split(), stdout=subprocess.PIPE)
+    output, error = process.communicate()
+    print(output)
 
 
 if __name__ == "__main__":
