@@ -10,8 +10,11 @@ def get_token():
     bashCommand = f"curl -u {user}:{password} {url} -d {type}"
     process = subprocess.Popen(bashCommand.split(), stdout=subprocess.PIPE)
     output, error = process.communicate()
-    print(output.decode())
-    
+    # print(output.decode())
+    response = output.decode()
+    response_json = json.loads(output)
+    print(response_json)
+
 
 if __name__ == "__main__":
     get_token()
