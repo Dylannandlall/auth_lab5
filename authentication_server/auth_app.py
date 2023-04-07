@@ -35,12 +35,14 @@ def login():
 
     response = get_token(username, password)
 
-    if response["access_token"] != "":
-        encrypted_token = encrypt(response["access_token"], string_kdf(SECRET_KEY))
-        json_response = {"auth":"success", "token":encrypted_token}
-        json_string = json.dumps(json_response)
-        return jsonify(message=(encrypt(json_string, string_kdf(password))))
-    
+    try:
+        if response["access_token"] != "":
+            encrypted_token = encrypt(response["access_token"], string_kdf(SECRET_KEY))
+            json_response = {"auth":"success", "token":encrypted_token}
+            json_string = json.dumps(json_response)
+            return jsonify(message=(encrypt(json_string, string_kdf(password))))
+    except requests.exceptions.JSONDecodeError:
+        return jsonify(auth="fail", token="")
     else:
         return jsonify(auth="fail", token="")
 
