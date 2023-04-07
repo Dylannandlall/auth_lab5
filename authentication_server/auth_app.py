@@ -27,20 +27,22 @@ def login():
             'password': password
         }
     
-    json_data = json.dumps(data)
+    # json_data = json.dumps(data)
 
-    headers = {'Content-type': 'application/json', 'Accept': 'text/plain'}
+    # headers = {'Content-type': 'application/json', 'Accept': 'text/plain'}
 
-    response = requests.post(f"{OAUTH_SERVER}/oauthVerification", data=json_data, headers=headers).json()
+    # response = requests.post(f"{OAUTH_SERVER}/oauthVerification", data=json_data, headers=headers).json()
 
-    if response["auth"] == "success":
-        encrypted_token = encrypt(response["token"], string_kdf(SECRET_KEY))
+    response = get_token(username, password)
+
+    if response["access_token"] != "":
+        encrypted_token = encrypt(response["access_token"], string_kdf(SECRET_KEY))
         json_response = {"auth":"success", "token":encrypted_token}
         json_string = json.dumps(json_response)
         return jsonify(message=(encrypt(json_string, string_kdf(password))))
     
     else:
-        return response
+        return jsonify(auth="fail", token="")
 
     # encrypted_token = (encrypt("This is a token!", string_kdf(SECRET_KEY)))
 
@@ -63,12 +65,10 @@ def string_kdf(password):
     
     return base64.urlsafe_b64encode(kdf.derive(bytes(password, 'utf-8')))
 
-def get_token():
-    user = "testclient"
-    password = "testpass"
+def get_token(username, password):
     url = "http://192.168.207.34:8080/token.php"
     type = "grant_type=client_credentials"
-    bashCommand = f"curl -u {user}:{password} {url} -d {type}"
+    bashCommand = f"curl -u {username}:{password} {url} -d {type}"
     process = subprocess.Popen(bashCommand.split(), stdout=subprocess.PIPE)
     output, error = process.communicate()
     response = output.decode()
