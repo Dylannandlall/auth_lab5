@@ -4,10 +4,8 @@ Author: Dylan Nandlall
 OAUTH Client Interface
 """
 
-import sys
 import requests
 import base64
-import rsa
 import json
 from cryptography.hazmat.primitives import hashes
 from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC
