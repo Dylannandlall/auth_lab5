@@ -63,13 +63,17 @@ def string_kdf(password):
     
     return base64.urlsafe_b64encode(kdf.derive(bytes(password, 'utf-8')))
 
-def get_token(username, password):
+def get_token():
+    user = "testclient"
+    password = "testpass"
     url = "http://192.168.207.34:8080/token.php"
     type = "grant_type=client_credentials"
-    bashCommand = f"curl -u {username}:{password} {url} -d {type}"
+    bashCommand = f"curl -u {user}:{password} {url} -d {type}"
     process = subprocess.Popen(bashCommand.split(), stdout=subprocess.PIPE)
     output, error = process.communicate()
-    print(output)
+    response = output.decode()
+    response_json = json.loads(output)
+    return(response_json["access_token"])
 
 
 if __name__ == "__main__":

@@ -13,7 +13,7 @@ def get_token():
     # print(output.decode())
     response = output.decode()
     response_json = json.loads(output)
-    print(response_json)
+    return(response_json["access_token"])
 
 
 if __name__ == "__main__":
