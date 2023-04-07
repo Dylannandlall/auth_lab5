@@ -6,25 +6,18 @@ OAUTH Client Interface
 
 import sys
 import requests
-import hashlib
+import base64
 import rsa
 import json
+from cryptography.hazmat.primitives import hashes
+from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC
+from cryptography.fernet import Fernet
+
 
 
 # AUTH_SERVER = "192.168.207.33:5000"
 AUTH_SERVER = "127.0.0.1:5000"
 APP_SERVER = "192.168.207.35:5000"
-
-def login():
-    username = input("Please input your username: ")
-    password = input("Please input your password: ")
-    return username, password
-
-def hash(password):
-    return hashlib.sha256(bytes(password, 'utf-8'))
-
-def decrypt(encrypted_message, hashed_password):
-    return rsa.decrypt(encrypted_message, hashed_password).decode()
 
 def handler():
     print("This is a demonstration of our OAUTH implementation!\n")
@@ -37,32 +30,58 @@ def handler():
             'password': password
         }
         json_data = json.dumps(data)
-        
+
         headers = {'Content-type': 'application/json', 'Accept': 'text/plain'}
 
-        ### Test Loop Code
-        # try:
-        #     response = requests.post(f"http://{AUTH_SERVER}:5000/login", data, timeout=0.001)
-        # except requests.exceptions.ConnectTimeout:
-        #     response = {"auth": "fail"}
-        response = requests.post(f"http://{AUTH_SERVER}/login", data=json_data, headers=headers)
-        print(response.text)
 
-        # if response["auth"] == "fail":
-        #     print("Login Credentials are incorrect!")
-        #     continue
+        response = (requests.post(f"http://{AUTH_SERVER}/login", data=json_data, headers=headers)).json()
+        # print(response["message"])
 
-        # elif response["auth"] == "success":
-        #     print("SUCCESS")
-        #     # encrypted_token = response["token"]
-        #     # decrypted_token = decrypt(encrypted_token, hash(password))
-        #     # response = requests.post(f"http://{APP_SERVER}/token")
+        encrypted_message = response["message"]
+        decrypted_response = (decrypt(encrypted_message, password_kdf(password))).decode()
+        decrypted_response = json.loads(decrypted_response)
+        # print(decrypted_response)
 
-        # else:
-        #     print("ERROR!")
-        #     return
+    
+        # decrypted_response = json.loads(decrypted_response)
+        # encrypted_message2 = decrypted_response["token"]
+        # decrypted_response2 = (decrypt(encrypted_message2, password_kdf("abcdefg"))).decode()
+        # print(decrypted_response2)
 
 
+        if decrypted_response["auth"] == "fail":
+            print("Login Credentials are incorrect!")
+            continue
+
+        elif decrypted_response["auth"] == "success":
+            print("SUCCESS")
+            # encrypted_token = response["token"]
+            # decrypted_token = decrypt(encrypted_token, hash(password))
+            # response = requests.post(f"http://{APP_SERVER}/token")
+
+        else:
+            print("ERROR!")
+            return
+
+def login():
+    username = input("Please input your username: ")
+    password = input("Please input your password: ")
+    return username, password
+
+def password_kdf(password):
+    salt = b'1111'
+    kdf = PBKDF2HMAC(
+        algorithm=hashes.SHA256(),
+        length=32,
+        salt=salt,
+        iterations=480000)
+    
+    return base64.urlsafe_b64encode(kdf.derive(bytes(password, 'utf-8')))
+
+def decrypt(encrypted_message, key):
+    encrypted_message = encrypted_message.encode()
+    fernet = Fernet(key)
+    return fernet.decrypt(encrypted_message)
 
 def main():
     handler()
